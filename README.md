@@ -1,7 +1,18 @@
 # Axel website — Bay Valley Hacks
 
-Partial source snapshot of the Axel assistive robot arm website.
+Source for the Axel assistive robot arm website, built with Next.js, TypeScript, Tailwind CSS, and Three.js.
 
-This snapshot contains the Next.js/TypeScript project configuration, dependency lockfile, arm inverse kinematics, shared tray layout, scroll animation helpers, reusable UI components, and shared branding and CSS types. The website pages, section and 3D scene components, styles, and visual assets remain in the local development project and are not included yet, so this snapshot is not a runnable website.
+Includes the website pages and components, scroll animations, arm simulation and inverse kinematics, 3D model and images, CAD assembly, design notes, and project configuration.
+
+## Local development
+
+```bash
+npm ci
+npm run dev
+```
+
+Open http://localhost:3000. Use `npm run build` for a production build and `npm run lint` for lint checks.
+
+Dependencies, generated build output, and environment files are excluded from version control.
 
 Commit timestamps record when snapshots are published, not when all included code was originally written.

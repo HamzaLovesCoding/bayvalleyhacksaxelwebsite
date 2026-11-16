@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+/* Design tokens sampled from the reference screenshot. */
+@theme {
+  --color-page: #fafafa;
+  --color-ink: #1a1718;
+  --color-text: #373737;
+  --color-muted: #7b7b7b;
+  --color-line: #b9cef8;
+  --color-grid: #e3eaf9;
+  --color-sky: #bee5fa;
+  --color-accent: #46a5d8;
+  --color-accent-soft: #e4f1fb;
+  --color-teal: #7cc6b8;
+  --color-night: #1f1728;
+  --color-night-text: #d9d9d9;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
+}
+
+/* Page colours follow the section on screen (components/motion/theme-scroll.tsx). */
+html {
+  background: var(--theme-bg, var(--color-page));
+}
+
+body {
+  background: var(--theme-bg, var(--color-page));
+  color: var(--theme-fg, var(--color-ink));
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Motion primitives (components/motion) ---------- */
+
+:root {
+  /* Named so they don't collide with Tailwind's own --ease-out / --ease-in-out. */
+  --ease-glide: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-servo: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Reveal: hidden only when motion is allowed, so reduced-motion users see everything at once. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal] {
+    transition:
+      opacity 900ms var(--ease-glide) var(--d, 0ms),
+      translate 1100ms var(--ease-glide) var(--d, 0ms);
+  }
+  [data-reveal]:not([data-in]) {
+    opacity: 0;
+    translate: 0 32px;
+  }
+
+  .reveal-word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    /* Room for descenders inside the mask. */
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+  .reveal-word > span {
+    display: inline-block;
+    transition: translate 1000ms var(--ease-glide) var(--d, 0ms);
+  }
+  .reveal-words:not([data-in]) .reveal-word > span {
+    translate: 0 105%;
+  }
+
+  /* Scrub: each word brightens as the tracked ancestor's --p passes its slot. */
+  .scrub-word {
+    opacity: clamp(0.16, calc((var(--p, 1) - var(--from, 0)) / var(--span, 1) * 1.25 * 10 - var(--i) * 10), 1);
+  }
+}
+
+
+/* ---------- Story steps (components/sections/story.tsx) ---------- */
+
+.story-step {
+  transition: opacity 600ms var(--ease-glide);
+}
+.story-step:not([data-active]) {
+  opacity: 0.22;
+}
+.story-detail {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 700ms var(--ease-glide);
+}
+.story-detail > * {
+  min-height: 0;
+  overflow: hidden;
+}
+.story-step[data-active] .story-detail {
+  grid-template-rows: 1fr;
+}
+@media (max-width: 1023px) {
+  .story-step:not([data-active]) {
+    opacity: 0;
+  }
+}
+
+/* ---------- Scroll cue ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-cue {
+    transform-origin: top;
+    animation: scroll-cue 2.2s var(--ease-servo) infinite;
+  }
+}
+@keyframes scroll-cue {
+  0% {
+    transform: scaleY(0);
+  }
+  50% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  51% {
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+}
+
+/* ---------- The arm: one part at a time (components/sections/the-arm.tsx) ---------- */
+
+.arm-part {
+  transition:
+    opacity 500ms var(--ease-glide),
+    translate 700ms var(--ease-glide);
+}
+.arm-part:not([data-active]) {
+  opacity: 0;
+  translate: 0 14px;
+  visibility: hidden;
+}
+.arm-tick {
+  transition: background-color 400ms var(--ease-glide);
+}
+.arm-tick[data-active] {
+  background: var(--theme-fg);
+}
+
+/* SVG strokes that draw themselves when their Reveal parent comes into view. */
+.draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .draw {
+    transition: stroke-dashoffset 1400ms var(--ease-glide) calc(var(--d, 0ms) + 250ms);
+  }
+  [data-reveal]:not([data-in]) .draw {
+    stroke-dashoffset: 1;
+  }
+}
